@@ -1,4 +1,4 @@
-#include "TDATree.h"
+#include "TDA_Tree.h"
 #include <iostream>
 
 using namespace std;
