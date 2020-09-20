@@ -17,17 +17,19 @@ class TDATree : public Object{
         
         TDATree();
         
+        TDATree(string);
+        
         ~TDATree();
         
         TreeNode* getParent(int);
         
-        TreeNode* getLefmosttChild(int);
+        TreeNode* getLefmosttChild(TreeNode*);
         
         TreeNode* getNextChild(TreeNode*);
         
         string getTag(int);
         
-        TreeNode* create(string, vector<TreeNode*>);
+        void create(string, vector<TDATree*>);
         
         void clear();
         
@@ -38,5 +40,11 @@ class TDATree : public Object{
         string toString();
         
         TreeNode* getRoot();
+        
+        vector<TreeNode*> getNodes();
+        
+        void addNode(TreeNode*);
+        
+        void addNodes(vector<TreeNode*>);
 };
 #endif
