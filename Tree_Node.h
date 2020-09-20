@@ -46,20 +46,3 @@ class TreeNode : public Object{
         string toString();
 };
 #endif
-
-/*
-    //anula()
-    //si no esta vacio
-        //for i = 1 to n
-            //delete nodos[i]
-        delete nodos
-        raiz = NULL
-    //destructor de TreeNode
-    //si tiene hijos
-        //for i = 1 to hijos.size
-            hijos[i].padre = NULL
-            hijos[i] = NULL
-        delete hijos;
-        delete padre
-        
-*/
