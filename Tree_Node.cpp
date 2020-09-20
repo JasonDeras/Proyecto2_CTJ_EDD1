@@ -1,6 +1,8 @@
 #include "Tree_Node.h"
+#include <iostream>
 
 TreeNode::TreeNode(){
+    parent = nullptr;
 }
 
 TreeNode::TreeNode(string nTag, TreeNode* nParent){
@@ -9,7 +11,17 @@ TreeNode::TreeNode(string nTag, TreeNode* nParent){
 }
 
 TreeNode::~TreeNode(){
-
+   
+    if(children.size() != 0){
+        
+        for(int i = 0;i < children.size();i++){
+            delete children[i];
+        }
+    }
+    
+    children.clear();
+    parent = nullptr;
+    delete parent;
 }
 
 void TreeNode::setChildren(vector<TreeNode*> nChildren){
@@ -21,6 +33,7 @@ vector<TreeNode*> TreeNode::getChildren(){
 }
 
 void TreeNode::addChild(TreeNode* nChild){
+    nChild->setParent(this);
     children.push_back(nChild);
 }
 
@@ -46,6 +59,11 @@ string TreeNode::getTag(){
 
 bool TreeNode::equals(Object* x){
     
+    if(dynamic_cast<TreeNode*>(x)){
+        return this->getTag() == dynamic_cast<TreeNode*>(x)->getTag() && this->getChildren() == dynamic_cast<TreeNode*>(x)->getChildren();
+    }
+    
+    return false; 
 }
 
 string TreeNode::toString(){
