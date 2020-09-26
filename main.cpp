@@ -1,7 +1,83 @@
 #include <iostream>
 #include <fstream>
-
+#include "TDA_Tree.h"
 using namespace std;
+
+//Método que imprime el árbol en postorder
+void postOrder(TreeNode* treenode) {
+	
+	for (int i = 0; i < treenode->getChildren().size(); i++) {
+		postOrder(treenode->getChild(i));
+		cout << ',';
+	}
+	cout << treenode->getTag();
+
+}
+
+//Método que imprime el árbol en inorder
+void inOrder(TreeNode* treenode) {
+
+	if (treenode->getChildren().size() != 0) {
+		inOrder(treenode->getChild(0));
+		cout << ',';
+	}
+	
+	cout << treenode->getTag();
+	
+	for (int i = 1; i < treenode->getChildren().size(); i++) {
+		cout << ',';
+		inOrder(treenode->getChild(i));
+	}
+
+}
+
+//Método que imprime el árbol en preorder
+void preOrder(TreeNode* treenode) {
+
+	cout << treenode->getTag();
+	
+	if (treenode->getChildren().size() != 0) {
+		
+		for (int i = 0; i < treenode->getChildren().size(); i++) {
+			cout << ',';
+			TreeNode* temp = treenode->getChild(i);
+			preOrder(temp);
+			temp = nullptr;
+			delete temp;
+		}
+	}
+}
+
+//Método que revisa si un string es esta vacio
+bool isEmpty(string validar) {
+	
+	for (int i = 0; i < validar.size(); i++) {
+		if (validar[i] != '\t')
+			return false;
+	}
+	return true;
+}
+
+//Método que retorna un vector de string con las etiquetas
+vector<string> returnTags(string recibir) {
+	
+	vector<string> tags;
+	
+	int posicion = 0;
+	
+	for (int i = 0; i < recibir.size(); i++) {
+		
+		if (recibir[i] == ',') {
+			tags.push_back(recibir.substr(posicion, i - posicion));
+			posicion = i + 1;
+		}
+	}
+
+	if (recibir.substr(posicion, recibir.size() - posicion) != "")
+		tags.push_back(recibir.substr(posicion, recibir.size() - posicion));
+	return tags;
+
+}
 
 //Método que valida que la entrada es del tipo de dato correcto (entero)
 int Validar_Opcion() {
@@ -24,6 +100,7 @@ int Validar_Opcion() {
 //Menu de las opciones de los arboles
 void M_Arboles(){
 
+	TDATree* tree = nullptr;
 	int opcion;
 	bool operaciones=true;
 
@@ -45,18 +122,110 @@ void M_Arboles(){
 
     		//Caso para Leer un arbol desde un archivo
     		case 1:{
+
+    			ifstream file;
+				string nombre, linea;
+				int times;
+				vector<string> lineas;
+				vector<TDATree*> arboles;
+				
+				cout << "Ingrese el nombre del archivo en el que está guardado el árbol (no es necesario agregarle la extensión): ";
+				cin.ignore();
+				getline(cin, nombre);
+				file.open(nombre + ".txt", ios::in);
+				
+				if (file) {
+					
+					cout << "El archivo se abrió exitósamente" << endl;
+					getline(file, linea, '\n');
+					times = stoi(linea);
+					
+					for (int j = 0; j < times; j++) {
+						getline(file, linea, '\n');
+						if (isEmpty(linea))
+							linea = "";
+						lineas.push_back(linea);
+					}
+
+					file.close();
+					
+					for (int i = lineas.size() - 1; i >= 0; i--) {
+						
+						if (lineas[i] != "") {
+							
+							TDATree* tr = nullptr;
+							vector<TDATree*> aux;
+							
+							for (int j = 0; j < returnTags(lineas[i]).size(); j++) {
+								
+								bool exists = false;
+								
+								if (arboles.size() != 0) {
+									
+									for (int k = 0; k < arboles.size(); k++) {
+										
+										if (arboles[k]->getRoot()->getTag() == returnTags(lineas[i])[j]) {
+											tr = arboles[k];
+											exists = true;
+											arboles.erase(arboles.begin() + k);
+											break;
+										}
+									}
+								}
+								
+								if (!exists)
+									tr = new TDATree(returnTags(lineas[i])[j]);
+								aux.push_back(tr);
+							}
+							
+							tr = new TDATree;
+							tr->create(to_string(i), aux);
+							arboles.push_back(tr);
+						}
+					}
+					tree = arboles[0];
+					arboles.clear();
+				
+				}else{
+					cout << "No se pudo abrir el archivo" << endl;
+				}
+				
     		break;}
     		
     		//Caso para Imprimir recorrido preorder
     		case 2:{
+
+    			if (tree) {
+					preOrder(tree->getRoot());
+					cout << endl;
+				}else{
+					cout << "No ha abierto ningun árbol" << endl;
+				}
+
     		break;}
     		
     		//Caso para Imprimir recorrido in-order
     		case 3:{
+    			
+    			if (tree) {
+					inOrder(tree->getRoot());
+					cout << endl;
+				}else{
+					cout << "No ha abierto ningun árbol" << endl;
+				}
+
     		break;}
     		
     		//Caso para Imprimir recorrido post-order
     		case 4:{
+
+    			if (tree) {
+					postOrder(tree->getRoot());
+					cout << endl;
+				}else{
+					cout << "No ha abierto ningun árbol" << endl;
+				}
+				
     		break;}
     		
     		//Caso para Codificador de Huffman
