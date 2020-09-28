@@ -12,6 +12,22 @@ Grafo::Grafo(int nodos)
             ady[i] = vector<int> (cn, INF);
 }
  
+vector< vector<Object> > Grafo :: floyd(){
+	vector< vector<Object> > path = this->ady;
+	
+	for(int i = 0; i < cn; i++)
+		path[i][i] = 0;
+	for(int k = 0; k < cn; k++)
+	    for(int i = 0; i < cn; i++)
+	     for(int j = 0; j < cn; j++){
+	      int dt = path[i][k] + path[k][j];
+	      if(path[i][j] > dt)
+	      path[i][j] = dt;
+	    }
+	    
+	return path;
+ } 
+ 
  vector< vector<Object> > Grafo :: kruskal(){
     vector< vector<Object> > adyacencia = this->ady;
     vector< vector<Object> > arbol(cn);

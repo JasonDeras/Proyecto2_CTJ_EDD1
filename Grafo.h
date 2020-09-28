@@ -8,6 +8,7 @@ public:
     Grafo(int nodos);
     vector< vector<Object> > prim();
     vector< vector<Object> > kruskal();
+    vector< vector<Object> > floyd();
 private:
     const int INF = -1;
     int cn; //cantidad de nodos
