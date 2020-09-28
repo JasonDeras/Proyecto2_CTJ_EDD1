@@ -12,8 +12,8 @@ Grafo::Grafo(int nodos)
             ady[i] = vector<int> (cn, INF);
 }
  
-vector< vector<Object> > Grafo :: floyd(){
-	vector< vector<Object> > path = this->ady;
+vector< vector<int> > Grafo :: floyd(){
+	vector< vector<int> > path = this->ady;
 	
 	for(int i = 0; i < cn; i++)
 		path[i][i] = 0;
@@ -28,9 +28,9 @@ vector< vector<Object> > Grafo :: floyd(){
 	return path;
  } 
  
- vector< vector<Object> > Grafo :: kruskal(){
-    vector< vector<Object> > adyacencia = this->ady;
-    vector< vector<Object> > arbol(cn);
+ vector< vector<int> > Grafo :: kruskal(){
+    vector< vector<int> > adyacencia = this->ady;
+    vector< vector<int> > arbol(cn);
     vector<int> pertenece(cn); // indica a que árbol pertenece el nodo
     
     for(int i = 0; i < cn; i++){
@@ -68,15 +68,15 @@ vector< vector<Object> > Grafo :: floyd(){
     return arbol;
 }
  
-vector< vector<Object> > Grafo :: prim(){
+vector< vector<int> > Grafo :: prim(){
 
-    vector< vector<Object> > adyacencia = this->ady;
-    vector< vector<Object> > arbol(cn);
-    vector<Object> markedLines;
-    vector<Object> :: iterator itVec;
+    vector< vector<int> > adyacencia = this->ady;
+    vector< vector<int> > arbol(cn);
+    vector<int> markedLines;
+    vector<int> :: iterator itVec;
 
     for(int i = 0; i < cn; i++)
-        arbol[i] = vector<Object> (cn, INF);
+        arbol[i] = vector<int> (cn, INF);
  
     int padre = 0;
     int hijo = 0;
