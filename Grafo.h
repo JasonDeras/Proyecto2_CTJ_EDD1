@@ -6,10 +6,10 @@ class Grafo
 public:
     Grafo();
     Grafo(int nodos);
-    vector< vector<int> > prim();
-    vector< vector<int> > kruskal();
+    vector< vector<Object> > prim();
+    vector< vector<Object> > kruskal();
 private:
     const int INF = -1;
     int cn; //cantidad de nodos
-    vector< vector<int> > ady; //matriz de adyacencia
+    vector< vector<Object> > ady; //matriz de adyacencia
 };
