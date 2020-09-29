@@ -1,4 +1,5 @@
 #include "TDA_Tree.h"
+#include "Grafo.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -7,6 +8,8 @@
 #include <climits>
 
 using namespace std;
+
+Grafo* grafo;
 
 //Capturar el nombre del archivo
 string nombreArchivo() {
@@ -417,18 +420,22 @@ void M_Grafos(){
 
 			//Caso para leer un grafo desde un archivo
 			case 1:{
+				grafo= new Grafo("grafos.txt");
 			break;}
 
 			//Caso para prim
 			case 2:{
+				grafo->imprimir(grafo->prim());
 			break;}
 			
 			//Caso para Krustal
 			case 3:{
+				grafo->imprimir(grafo->kruskal());
 			break;}
 			
 			//Caso para floyd
 			case 4:{
+				grafo->imprimir(grafo->floyd());
 			break;}
 			
 			//Caso para regresar al menu pirncipal desde grafos
