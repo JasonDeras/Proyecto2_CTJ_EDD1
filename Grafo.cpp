@@ -1,6 +1,6 @@
 #include "Grafo.h"
 
-Grafo::Grafo()
+Grafo::Grafo(string nombrearchivo)
 {
  
 }
@@ -13,6 +13,16 @@ Grafo::Grafo(int nodos)
         for(int i = 0; i < cn; i++)
             ady[i] = vector<int> (cn, INF);
 }
+ 
+void Grafo::imprimir(vector< vector<int> > mat)
+{
+	for(int i=0;i<mat.size();i++){
+		for(int j=0;j<mat[i].size();j++){
+			cout << mat[i][j] << " ";
+		}
+		cout << endl;
+	}	
+} 
  
 vector< vector<int> > Grafo :: floyd(){
 	vector< vector<int> > path = this->ady;
@@ -30,7 +40,7 @@ vector< vector<int> > Grafo :: floyd(){
 	return path;
  } 
  
- vector< vector<int> > Grafo :: kruskal(){
+vector< vector<int> > Grafo :: kruskal(){
     vector< vector<int> > adyacencia = this->ady;
     vector< vector<int> > arbol(cn);
     vector<int> pertenece(cn); // indica a que árbol pertenece el nodo
