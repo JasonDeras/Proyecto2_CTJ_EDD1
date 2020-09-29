@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Arista::Arista() {
+Arista::Arista():Object() {
 	origen = 0;
 	direccion = 0;
 	peso = 0;

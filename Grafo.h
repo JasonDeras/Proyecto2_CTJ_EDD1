@@ -1,6 +1,4 @@
-#ifndef GRAFO_H
-#define GRAFO_H
-
+#pragma once
 #include <vector>
  
 using namespace std;
