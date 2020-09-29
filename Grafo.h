@@ -1,4 +1,4 @@
-#ifndef GRAFO_H
+ #ifndef GRAFO_H
 #define GRAFO_H
 
 #include <vector>
@@ -14,7 +14,6 @@ public:
     vector< vector<int> > floyd();
     void imprimir(vector< vector<int> >);
 private:
-    const int INF = -1;
     int cn; //cantidad de nodos
     vector< vector<int> > ady; //matriz de adyacencia
 };
