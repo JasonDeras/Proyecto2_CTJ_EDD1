@@ -17,7 +17,7 @@ Grafo::Grafo(string nombrearchivo){
 
         ady.clear();
         ady.resize(nVertices,vector<int>(nVertices,0));
-
+		cn = nVertices;
         string linea;
 
         for (int i = 0; i < nVertices; i++)
@@ -109,7 +109,7 @@ vector< vector<int> > Grafo :: kruskal(){
     vector<int> pertenece(cn); // indica a que árbol pertenece el nodo
     
     for(int i = 0; i < cn; i++){
-        arbol[i] = vector<int> (cn, 0);
+		arbol[i] = vector<int> (cn, 0);
         pertenece[i] = i;
     }
 
@@ -144,20 +144,21 @@ vector< vector<int> > Grafo :: kruskal(){
 }
  
 vector< vector<int> > Grafo :: prim(){
-
     vector< vector<int> > adyacencia = this->ady;
     vector< vector<int> > arbol(cn);
     vector<int> markedLines;
     vector<int> :: iterator itVec;
+ 
 
-    for(int i = 0; i < cn; i++)
-        arbol[i] = vector<int> (cn, INF);
+    for(int i = 0; i < cn; i++){
+    	arbol[i] = vector<int> (cn,0);
+	}
  
     int padre = 0;
     int hijo = 0;
     while(markedLines.size() + 1 < cn){
         padre = hijo;
-
+        
         markedLines.push_back(padre);
         for(int i = 0; i < cn; i++)
             adyacencia[i][padre] = INF;

@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <iostream> 
+#include <climits>
 using namespace std;
+
 class Grafo
 {
 public:
@@ -18,7 +20,7 @@ public:
     void imprimir(vector< vector<int> >);
 private:
     int cn; //cantidad de nodos
-    const int INF=-1;
+    const int INF = INT_MAX;
     vector< vector<int> > ady; //matriz de adyacencia
 };
 
