@@ -56,7 +56,6 @@ string Tree_Node::toString(){
     return etiqueta;
 }
 
-//DESTRUCTOR
 Tree_Node::~Tree_Node(){
     
 }
