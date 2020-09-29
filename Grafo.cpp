@@ -1,10 +1,68 @@
 #include "Grafo.h"
+#include "Arista.h"
+#include <fstream>
+#include <iostream>
+#include <climits>
 
-Grafo::Grafo(string nombrearchivo)
-{
- 
+using namespace std;
+
+Grafo::Grafo(string nombrearchivo){
+     
+    ifstream ifs(nombrearchivo);
+    if(ifs.is_open())
+    {
+        int nVertices;
+        ifs >> nVertices;
+        ifs.ignore(100,'\n');
+
+        ady.clear();
+        ady.resize(nVertices,vector<int>(nVertices,0));
+
+        string linea;
+
+        for (int i = 0; i < nVertices; i++)
+        {
+            getline(ifs,linea);
+            vector<string> aristas = Split(linea,',');
+
+            for (int j = 0; j < nVertices; j++)
+            {
+                Crear_Aristas(i,j,stoi(aristas[j]));
+            }
+
+        }
+        
+    }
 }
  
+ vector<string> Grafo::Split(string linea, char delim)
+{
+    vector<string> retornar;
+    string temp = "";
+
+    for (char c : linea)
+    {
+        if (c != delim)
+        {
+            temp.push_back(c);
+        }
+        else
+        {
+            retornar.push_back(temp);
+            temp = "";
+        }
+        
+    }
+
+    if (temp.size() > 0)
+    {
+        retornar.push_back(temp);
+    }
+    
+    return retornar;
+    
+}
+
 Grafo::Grafo(int nodos)
 {
     this->cn = nodos;
@@ -16,28 +74,33 @@ Grafo::Grafo(int nodos)
  
 void Grafo::imprimir(vector< vector<int> > mat)
 {
-	for(int i=0;i<mat.size();i++){
-		for(int j=0;j<mat[i].size();j++){
-			cout << mat[i][j] << " ";
-		}
-		cout << endl;
-	}	
+    for(int i=0;i<mat.size();i++){
+        for(int j=0;j<mat[i].size();j++){
+            cout << mat[i][j] << " ";
+        }
+        cout << endl;
+    }   
+}
+
+void Grafo::Crear_Aristas(int origen, int destino, int peso)
+{
+    ady[origen][destino] = peso;
 } 
  
 vector< vector<int> > Grafo :: floyd(){
-	vector< vector<int> > path = this->ady;
-	
-	for(int i = 0; i < cn; i++)
-		path[i][i] = 0;
-	for(int k = 0; k < cn; k++)
-	    for(int i = 0; i < cn; i++)
-	     for(int j = 0; j < cn; j++){
-	      int dt = path[i][k] + path[k][j];
-	      if(path[i][j] > dt)
-	      path[i][j] = dt;
-	    }
-	    
-	return path;
+    vector< vector<int> > path = this->ady;
+    
+    for(int i = 0; i < cn; i++)
+        path[i][i] = 0;
+    for(int k = 0; k < cn; k++)
+        for(int i = 0; i < cn; i++)
+         for(int j = 0; j < cn; j++){
+          int dt = path[i][k] + path[k][j];
+          if(path[i][j] > dt)
+          path[i][j] = dt;
+        }
+        
+    return path;
  } 
  
 vector< vector<int> > Grafo :: kruskal(){
@@ -68,11 +131,11 @@ vector< vector<int> > Grafo :: kruskal(){
             arbol[nodoA][nodoB] = min;
             arbol[nodoB][nodoA] = min;
 
-        	int temp = pertenece[nodoB];
-        	pertenece[nodoB] = pertenece[nodoA];
-        	for(int k = 0; k < cn; k++)
-        		if(pertenece[k] == temp)
-        			pertenece[k] = pertenece[nodoA];
+            int temp = pertenece[nodoB];
+            pertenece[nodoB] = pertenece[nodoA];
+            for(int k = 0; k < cn; k++)
+                if(pertenece[k] == temp)
+                    pertenece[k] = pertenece[nodoA];
             
             arcos++;
         }

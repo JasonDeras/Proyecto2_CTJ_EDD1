@@ -7,7 +7,7 @@ class Object{
 
     public:
 
-        Object(){};
+        Object();
 
         virtual int Comparar(Object*) = 0;
 

@@ -420,7 +420,10 @@ void M_Grafos(){
 
 			//Caso para leer un grafo desde un archivo
 			case 1:{
-				grafo= new Grafo("grafos.txt");
+                string nombre;
+                cout<<"Ingrese el nombre del archivo: ";
+                cin>>nombre;
+				grafo= new Grafo(nombre+".txt");
 			break;}
 
 			//Caso para prim
