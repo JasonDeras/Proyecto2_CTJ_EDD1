@@ -1,83 +1,295 @@
+#include "TDA_Tree.h"
 #include <iostream>
 #include <fstream>
-#include "TDA_Tree.h"
+#include <sstream>
+#include <vector>
+#include <map>
+#include <climits>
+
 using namespace std;
 
-//Método que imprime el árbol en postorder
-void postOrder(TreeNode* treenode) {
-	
-	for (int i = 0; i < treenode->getChildren().size(); i++) {
-		postOrder(treenode->getChild(i));
-		cout << ',';
-	}
-	cout << treenode->getTag();
+//Capturar el nombre del archivo
+string nombreArchivo() {
+    string nombre;
+    cout << "Ingrese el nombre del archivo: ";
+    cin >> nombre;
+    return nombre;
+}//fin del metodo para obtener el nombre del archivo
 
-}
+//Codificador en codigo huffman
+void Code_Huffman(string nombre){
 
-//Método que imprime el árbol en inorder
-void inOrder(TreeNode* treenode) {
+    ifstream ifs(nombre);
+    
+    if(ifs.is_open()){
+        ostringstream oss;
+        oss<<ifs.rdbuf();
 
-	if (treenode->getChildren().size() != 0) {
-		inOrder(treenode->getChild(0));
-		cout << ',';
-	}
-	
-	cout << treenode->getTag();
-	
-	for (int i = 1; i < treenode->getChildren().size(); i++) {
-		cout << ',';
-		inOrder(treenode->getChild(i));
-	}
+        string strf = oss.str();
 
-}
+        vector<int> freq(256,0);
 
-//Método que imprime el árbol en preorder
-void preOrder(TreeNode* treenode) {
+        for (unsigned char c : strf)
+        {
+            freq[c]++;
+        }
 
-	cout << treenode->getTag();
-	
-	if (treenode->getChildren().size() != 0) {
-		
-		for (int i = 0; i < treenode->getChildren().size(); i++) {
-			cout << ',';
-			TreeNode* temp = treenode->getChild(i);
-			preOrder(temp);
-			temp = nullptr;
-			delete temp;
-		}
-	}
-}
+        vector<pair<Tree_Node*,int>> nodes;
+        nodes.push_back(make_pair(nullptr,0));
 
-//Método que revisa si un string es esta vacio
-bool isEmpty(string validar) {
-	
-	for (int i = 0; i < validar.size(); i++) {
-		if (validar[i] != '\t')
-			return false;
-	}
-	return true;
-}
+        for(int c = 0; c < 256 ;c++)
+        {
+            if (freq[c] > 0)
+            {
+                Tree_Node* tNode = new Tree_Node(nullptr,nullptr,nullptr,string(1,c));
+                nodes.push_back(make_pair(tNode,freq[c]));
+            }
 
-//Método que retorna un vector de string con las etiquetas
-vector<string> returnTags(string recibir) {
-	
-	vector<string> tags;
-	
-	int posicion = 0;
-	
-	for (int i = 0; i < recibir.size(); i++) {
-		
-		if (recibir[i] == ',') {
-			tags.push_back(recibir.substr(posicion, i - posicion));
-			posicion = i + 1;
-		}
-	}
+        }
 
-	if (recibir.substr(posicion, recibir.size() - posicion) != "")
-		tags.push_back(recibir.substr(posicion, recibir.size() - posicion));
-	return tags;
+       
+        int nodos_rest = nodes.size();
+        while (nodos_rest > 2)
+        {
+            int p1 = 0;
+            int p2 = 0;
+            int f1 = INT_MAX;
+            int f2 = INT_MAX;
+            nodos_rest = 0;
+            for (int i = 1; i < nodes.size(); i++)
+            {
+                Tree_Node* tNode = nodes[i].first;
+                int nf = nodes[i].second;
+                if (tNode->getPadre() == nullptr)
+                {
+                    if(nf < f1)
+                    {
+                        p2 = p1;
+                        f2 = f1;
+                        p1 = i;
+                        f1 = nf;
+                    }
+                    else if (nf < f2)
+                    {
+                        p2 = i;
+                        f2 = nf;
+                    }
+                    nodos_rest++;
+                }
+                
+            }
 
-}
+            Tree_Node* tNode = new Tree_Node(nullptr,nodes[p1].first,nodes[p2].first,"");
+            int newF = f1 + f2;
+            nodes[p1].first->setPadre(tNode);
+            nodes[p2].first->setPadre(tNode);
+
+            if (nodos_rest == 2)
+            {
+                nodes[0] = make_pair(tNode,newF);
+            }
+            else
+            {
+                nodes.push_back(make_pair(tNode,newF));
+            }
+            
+        }
+
+        //Adaptar la estructura
+
+        vector<Tree_Node*> arbol;
+
+        for (int i = 0; i < nodes.size(); i++){
+            arbol.push_back(nodes[i].first);
+        }
+
+        //Crear el arbol
+
+        TDA_Tree* tree = new TDA_Tree(arbol);
+
+        //Crear el archivo con el codigo
+
+        ofstream ofsc(nombre + ".hfc");
+        if(ofsc.is_open())
+        {
+            cout << endl << "Codigo de Huffman: ";
+            for (char c : strf)
+            {
+                string et = string(1,c);
+                string route = tree->Ruta(et);
+                cout << route;
+                ofsc << route;
+            }
+            cout << endl << "Arbol: ";
+            tree->PreOrder(tree->Raiz());
+            cout << endl;
+
+            ofsc.close();
+        }
+
+        //Crear el archivo con el arbol
+
+        ofstream ofst(nombre + ".hft");
+        if (ofst.is_open())
+        {
+            ofst << arbol.size() << endl;
+            for (int i = 0; i < arbol.size(); i++)
+            {
+                Tree_Node* tNode = arbol[i];
+                if (tNode->getIzquierdo() != nullptr)
+                {
+                    string etiqueta = tNode->getIzquierdo()->getEtiqueta();
+                    if (etiqueta == "," )
+                    {
+                        etiqueta = "cm";
+                    }
+                    else if (etiqueta == ";")
+                    {
+                        etiqueta = "pc";
+                    }
+                
+                    ofst << etiqueta << ",";
+
+                    for (int j = 0; j < arbol.size(); j++)
+                    {
+                        if (tNode->getIzquierdo() == arbol[j])
+                        {
+                            ofst << j << ";";
+                            break;
+                        }
+                        
+                    }
+
+                    if (tNode->getDerecho() != nullptr)
+                    {
+                        string etiquetaD = tNode->getDerecho()->getEtiqueta();
+                        if (etiquetaD == "," )
+                        {
+                            etiquetaD = "cm";
+                        }
+                        else if (etiquetaD == ";")
+                        {
+                            etiquetaD = "pc";
+                        }
+                        ofst << etiquetaD << ",";
+
+                        for (int k = 0; k < arbol.size(); k++)
+                        {
+                            if (tNode->getDerecho() == arbol[k])
+                            {
+                                ofst << k;
+                                break;
+                            }
+                        
+                        }
+                        
+                    }
+                }
+                else
+                {
+                    ofst << ",;,";
+                }
+                
+                ofst << endl;
+            }
+            ofst.close();
+        }
+    }
+
+}//fib de metodo de codificacion de huffman
+
+
+//Decodificado de huffman
+void Decode_Huffman(string mensaje,string arbol){
+
+    //Obtener el arbol
+    ifstream ifst(arbol);
+    if (ifst.is_open())
+    { 
+        int sizeN;
+        ifst >> sizeN;
+        ifst.ignore(100,'\n');
+
+        vector<Tree_Node*> nodos(sizeN,nullptr);
+        for (int i = 0; i < sizeN; i++){
+            nodos[i] = new Tree_Node(nullptr,nullptr,nullptr,"");
+        }
+
+        for (int i = 0; i < sizeN; i++){
+            string etiqueta;
+            getline(ifst,etiqueta,',');
+
+            if (etiqueta == "cm")
+            {
+                etiqueta = ",";
+            }
+            else if (etiqueta == "pc")
+            {
+                etiqueta = ";";
+            }
+
+            string n_izquierdo;
+            getline(ifst,n_izquierdo,';');
+
+            if(n_izquierdo != ""){
+                Tree_Node* izquierdo = nodos[stoi(n_izquierdo)];
+                izquierdo->setEtiqueta(etiqueta);
+                izquierdo->setPadre(nodos[i]);
+                nodos[i]->setIzquierdo(izquierdo);
+
+            }
+
+            string etiquetaD;
+            getline(ifst,etiquetaD,',');
+
+            if (etiquetaD == "cm"){
+                etiquetaD = ",";
+            }else if (etiquetaD == "pc"){
+                etiquetaD = ";";
+            }
+
+            string n_derecho;
+            getline(ifst,n_derecho);
+
+            if (n_derecho != ""){
+                Tree_Node* derecho = nodos[stoi(n_derecho)];
+                derecho->setEtiqueta(etiquetaD);
+                derecho->setPadre(nodos[i]);
+                nodos[i]->setDerecho(derecho);
+            }
+        }
+
+        TDA_Tree* tree = new TDA_Tree(nodos);
+
+        //Decodificar el mensaje
+
+        ifstream ifsc(mensaje);
+        if (ifsc.is_open()){
+            char c;
+            Tree_Node* actual = tree->Raiz();
+
+            cout << endl << "Mensaje decodificado\n";
+
+            while (ifsc.get(c)){
+                if(c == '0'){
+                    actual = actual->getIzquierdo();
+                }
+                else{
+                    actual = actual->getDerecho();
+                }
+
+                if(actual->getEtiqueta() != ""){
+                    cout << actual->getEtiqueta();
+                    actual = tree->Raiz();
+                }
+                
+            }
+
+            cout << endl;
+        }
+    }
+    
+}//fin del metodo de decodificado de huffman
 
 //Método que valida que la entrada es del tipo de dato correcto (entero)
 int Validar_Opcion() {
@@ -100,10 +312,9 @@ int Validar_Opcion() {
 //Menu de las opciones de los arboles
 void M_Arboles(){
 
-	TDATree* tree = nullptr;
+	TDA_Tree* tree = nullptr;
 	int opcion;
 	bool operaciones=true;
-
 	while(operaciones){
 
 		cout<<"Algoritmos sobre Árboles\n\n";
@@ -122,118 +333,48 @@ void M_Arboles(){
 
     		//Caso para Leer un arbol desde un archivo
     		case 1:{
-
-    			ifstream file;
-				string nombre, linea;
-				int times;
-				vector<string> lineas;
-				vector<TDATree*> arboles;
-				
-				cout << "Ingrese el nombre del archivo en el que está guardado el árbol (no es necesario agregarle la extensión): ";
-				cin.ignore();
-				getline(cin, nombre);
-				file.open(nombre + ".txt", ios::in);
-				
-				if (file) {
-					
-					cout << "El archivo se abrió exitósamente" << endl;
-					getline(file, linea, '\n');
-					times = stoi(linea);
-					
-					for (int j = 0; j < times; j++) {
-						getline(file, linea, '\n');
-						if (isEmpty(linea))
-							linea = "";
-						lineas.push_back(linea);
-					}
-
-					file.close();
-					
-					for (int i = lineas.size() - 1; i >= 0; i--) {
-						
-						if (lineas[i] != "") {
-							
-							TDATree* tr = nullptr;
-							vector<TDATree*> aux;
-							
-							for (int j = 0; j < returnTags(lineas[i]).size(); j++) {
-								
-								bool exists = false;
-								
-								if (arboles.size() != 0) {
-									
-									for (int k = 0; k < arboles.size(); k++) {
-										
-										if (arboles[k]->getRoot()->getTag() == returnTags(lineas[i])[j]) {
-											tr = arboles[k];
-											exists = true;
-											arboles.erase(arboles.begin() + k);
-											break;
-										}
-									}
-								}
-								
-								if (!exists)
-									tr = new TDATree(returnTags(lineas[i])[j]);
-								aux.push_back(tr);
-							}
-							
-							tr = new TDATree;
-							tr->create(to_string(i), aux);
-							arboles.push_back(tr);
-						}
-					}
-					tree = arboles[0];
-					arboles.clear();
-				
-				}else{
-					cout << "No se pudo abrir el archivo" << endl;
-				}
-				
+				if (tree != nullptr) {
+                        delete tree;
+                        tree = nullptr;
+                    }
+                    tree = TDA_Tree::leerDeArchivo(nombreArchivo());
     		break;}
     		
     		//Caso para Imprimir recorrido preorder
     		case 2:{
-
-    			if (tree) {
-					preOrder(tree->getRoot());
-					cout << endl;
-				}else{
-					cout << "No ha abierto ningun árbol" << endl;
-				}
-
+                cout<<"Arbol en preorder\n";
+                tree->PreOrder(tree->Raiz());
+                cout<<endl;
     		break;}
     		
     		//Caso para Imprimir recorrido in-order
     		case 3:{
-    			
-    			if (tree) {
-					inOrder(tree->getRoot());
-					cout << endl;
-				}else{
-					cout << "No ha abierto ningun árbol" << endl;
-				}
-
+                cout<<"Arbol en in order\n";
+                tree->InOrder(tree->Raiz());
+                cout<<endl;
     		break;}
     		
     		//Caso para Imprimir recorrido post-order
     		case 4:{
-
-    			if (tree) {
-					postOrder(tree->getRoot());
-					cout << endl;
-				}else{
-					cout << "No ha abierto ningun árbol" << endl;
-				}
-				
+                cout<<"Arbol en post order\n";
+				tree->PostOrder(tree->Raiz());
+                cout<<"\n\n";
     		break;}
     		
     		//Caso para Codificador de Huffman
     		case 5:{
+    			string nombre;
+    			cout << "Ingrese el nombre del archivo: ";
+        		cin >> nombre;
+        		Code_Huffman(nombre);
     		break;}
     		
     		//Caso para Decodificador de Huffman
     		case 6:{
+                string nombre;
+                cout << "Ingrese el nombre del archivo: ";
+                cin >> nombre;
+                Decode_Huffman(nombre + ".hfc", nombre + ".hft");
     		break;}
     		
     		//Caso para volver al menu principal desde arboles
